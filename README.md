@@ -357,7 +357,7 @@
             <div class="grill-pattern"></div>
             <div class="logo-container">
                 <!-- Logo do Google Drive -->
-                <img src="[https://drive.google.com/file/d/1AnVZw7czb0t0ha6-eFxSBcXCGpskyG1F/view?usp=drive_link](https://github.com/danilomoreiraagr2-lang/assim-assado-cardapio/blob/b736bcc39a4127249d1a32d66b2507fae417c377/LOGO.jpg)" alt="ASSIM ASSADO ESPETOS" class="logo-image" onerror="replaceWithTextLogo()">
+                <img src="[https://drive.google.com/file/d/1AnVZw7czb0t0ha6-eFxSBcXCGpskyG1F/view?usp=drive_link](https://github.com/danilomoreiraagr2-lang/assim-assado-cardapio/blob/b736bcc39a4127249d1a32d66b2507fae417c377/LOGO.png)" alt="ASSIM ASSADO ESPETOS" class="logo-image" onerror="replaceWithTextLogo()">
                 <!-- Texto de fallback que será mostrado se a imagem não carregar -->
                 <div class="logo-text" style="display: none;">
                     <span class="assim">ASSIM</span>
