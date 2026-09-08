@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASSIM ASSADO - ESPETOS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,43 +15,49 @@
         }
         
         body {
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: #0a0a0a;
+            color: #f5f5f5;
             line-height: 1.6;
         }
         
         .container {
             max-width: 500px;
             margin: 0 auto;
-            background-color: white;
+            background: linear-gradient(to bottom, #1a1a1a, #0d0d0d);
             min-height: 100vh;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+            position: relative;
+            padding-bottom: 120px;
         }
         
         header {
-            background: linear-gradient(135deg, #ff6b35, #e55a2b);
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
             color: white;
             padding: 25px 20px;
             text-align: center;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
+            position: relative;
+            overflow: hidden;
         }
         
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            line-height: 1.2;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        
-        .logo span {
+        .logo-image {
+            max-width: 100%;
+            height: auto;
             display: block;
+            margin: 0 auto;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
         
         .contact-info {
             margin-top: 15px;
             font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 10px;
         }
         
         .contact-info p {
@@ -58,7 +65,7 @@
         }
         
         h2 {
-            color: #ff6b35;
+            color: #D4AF37;
             margin: 20px 0 15px;
             padding: 0 20px;
             font-size: 22px;
@@ -71,476 +78,2294 @@
         }
         
         .section-divider {
-            height: 3px;
-            background: linear-gradient(to right, #ff6b35, transparent);
+            height: 2px;
+            background: linear-gradient(to right, #D4AF37, transparent);
             margin: 10px 20px;
         }
         
         .menu-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin: 0 20px 15px;
             padding: 12px 15px;
-            background-color: #fff;
+            background: linear-gradient(to right, #1e1e1e, #2a2a2a);
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 4px solid #ff6b35;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #D4AF37;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+        
+        .item-info {
+            flex: 1;
         }
         
         .item-name {
             font-weight: 600;
-            font-size: 16px;
+            font-size: 15px;
+        }
+        
+        .item-desc {
+            font-size: 11px;
+            color: #aaa;
+            font-style: italic;
+            margin-top: 2px;
         }
         
         .item-price {
-            color: #ff6b35;
+            color: #FFD700;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
+            margin-top: 3px;
+        }
+        
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .quantity-btn {
+            background: #D4AF37;
+            color: white;
+            border: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background: #FFD700;
+        }
+        
+        .quantity-display {
+            min-width: 22px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .add-to-cart {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);
         }
         
         .combo-item {
-            background-color: #fff9f5;
+            background: linear-gradient(to right, #1e1e1e, #2a2a2a);
             margin: 15px 20px;
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            border: 1px dashed #ff6b35;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border: 1px dashed #D4AF37;
         }
         
         .combo-title {
             font-weight: bold;
-            color: #ff6b35;
-            font-size: 18px;
-            margin-bottom: 10px;
+            color: #D4AF37;
+            font-size: 17px;
+            margin-bottom: 5px;
             text-align: center;
         }
         
         .combo-description {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .combo-detail {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 8px;
+            text-align: center;
+            font-style: italic;
         }
         
         .combo-price {
             text-align: center;
             font-weight: bold;
-            color: #ff6b35;
-            font-size: 20px;
+            color: #FFD700;
+            font-size: 18px;
             margin-top: 5px;
         }
         
-        .whatsapp-btn {
-            display: block;
-            width: calc(100% - 40px);
-            margin: 30px 20px 20px;
-            padding: 16px;
-            background-color: #25D366;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
+        .combo-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .special-item {
+            background: linear-gradient(135deg, #1e1e1e, #2a1a1a);
+            border-left: 4px solid #FFD700;
+        }
+        
+        .cart-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 12px 20px;
+            border-top: 2px solid #D4AF37;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .cart-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .cart-total {
             font-size: 18px;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s ease;
-            position: sticky;
-            bottom: 20px;
+            font-weight: bold;
+            color: #FFD700;
         }
         
-        .whatsapp-btn:hover {
-            background-color: #128C7E;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        .cart-items-count {
+            background: #D4AF37;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 8px;
         }
         
-        .whatsapp-btn i {
-            margin-right: 10px;
-            font-size: 20px;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #777;
+        .checkout-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 14px;
-            background-color: #f9f9f9;
-            border-top: 1px solid #eee;
         }
         
-        .info-section {
-            background-color: #fff9f5;
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+        
+        .checkout-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .info-section, .delivery-section, .payment-section, .instagram-section {
+            background: linear-gradient(to right, #1e1e1e, #2a2a2a);
             padding: 15px 20px;
-            margin: 20px;
+            margin: 15px 20px;
             border-radius: 10px;
-            border-left: 4px solid #ff6b35;
+            border-left: 4px solid #D4AF37;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
         }
         
-        .info-section h3 {
-            color: #ff6b35;
+        .info-section h3, .delivery-section h3, .payment-section h3, .instagram-section h3 {
+            color: #D4AF37;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
+            font-size: 16px;
         }
         
-        .info-section h3 i {
+        .info-section h3 i, .delivery-section h3 i, .payment-section h3 i, .instagram-section h3 i {
             margin-right: 10px;
         }
         
         .info-section p {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            color: #ccc;
+            font-size: 13px;
+        }
+        
+        .delivery-options, .payment-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .delivery-option, .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .delivery-option input[type="radio"], 
+        .payment-option input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #D4AF37;
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .delivery-option input[type="radio"]:checked,
+        .payment-option input[type="radio"]:checked {
+            background-color: #D4AF37;
+            border-color: #D4AF37;
+        }
+        
+        .delivery-option input[type="radio"]:checked::before,
+        .payment-option input[type="radio"]:checked::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .delivery-fee {
+            color: #FFD700;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .delivery-fee.show {
+            display: block;
+        }
+        
+        .delivery-fee i, .payment-info i {
+            margin-right: 5px;
+            color: #D4AF37;
+        }
+        
+        .payment-info {
+            color: #FFD700;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        
+        .instagram-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        .instagram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 48, 108, 0.4);
+        }
+        
+        .instagram-btn i {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #999;
+            font-size: 13px;
+            background-color: #111;
+            border-top: 1px solid #333;
+            margin-top: 20px;
         }
         
         .social-icons {
             display: flex;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 10px;
             gap: 15px;
         }
         
         .social-icons a {
-            color: #ff6b35;
-            font-size: 20px;
-            transition: color 0.3s;
+            color: #D4AF37;
+            font-size: 18px;
+            transition: color 0.3s, transform 0.3s;
         }
         
         .social-icons a:hover {
-            color: #e55a2b;
+            color: #FFD700;
+            transform: scale(1.2);
         }
         
         .menu-category {
             margin-bottom: 25px;
         }
-        
-        .price-table {
+
+        .sub-category-title {
+            padding: 0 20px;
+            margin: 15px 0 10px;
+            color: #D4AF37;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* ============================================= */
+        /* MODAL DE ENDEREÇO */
+        /* ============================================= */
+        .modal-address-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
         
-        .price-table td {
-            padding: 8px 15px;
-            border-bottom: 1px solid #eee;
+        .modal-address-overlay.show {
+            display: flex;
         }
         
-        .price-table tr:last-child td {
-            border-bottom: none;
+        .modal-address-content {
+            background: #1e1e1e;
+            border-radius: 12px;
+            max-width: 95%;
+            max-height: 90vh;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 420px;
+            border: 2px solid #D4AF37;
         }
         
-        .price-table .item {
-            text-align: left;
+        .modal-address-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #D4AF37;
         }
         
-        .price-table .price {
-            text-align: right;
-            color: #ff6b35;
+        .modal-address-header h3 {
+            color: #D4AF37;
+            font-size: 18px;
+        }
+        
+        .modal-address-header h3 i {
+            margin-right: 10px;
+        }
+        
+        .modal-address-close {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
             font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-address-body {
+            flex: 1;
+            padding: 5px 0;
+        }
+        
+        .modal-address-body label {
+            color: #f5f5f5;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .modal-address-body .field-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-address-body input,
+        .modal-address-body textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #f5f5f5;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .modal-address-body input:focus,
+        .modal-address-body textarea:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        
+        .modal-address-body textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .modal-address-body .field-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-address-body .field-row .field-group {
+            flex: 1;
+        }
+        
+        .modal-address-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #333;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .modal-address-footer button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-address-confirm {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-address-confirm:hover {
+            background: #128C7E;
+            transform: scale(1.02);
+        }
+        
+        .btn-address-cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-address-cancel:hover {
+            background: #5a6268;
+        }
+        
+        .address-info-display {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #D4AF37;
+            display: none;
+        }
+        
+        .address-info-display.show {
+            display: block;
+        }
+        
+        .address-info-display p {
+            color: #ccc;
+            font-size: 13px;
+        }
+        
+        .address-info-display strong {
+            color: #D4AF37;
+        }
+        
+        .btn-edit-address {
+            background: #D4AF37;
+            color: #1a1a1a;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit-address:hover {
+            background: #FFD700;
+        }
+
+        /* ============================================= */
+        /* MODAL DO CUPOM */
+        /* ============================================= */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 95%;
+            max-height: 90vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 420px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #D4AF37;
+        }
+        
+        .modal-header h3 {
+            color: #1a1a1a;
+            font-size: 18px;
+        }
+        
+        .modal-close {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            color: #000;
+            min-height: 300px;
+            max-height: 55vh;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .modal-footer button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-copy {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-copy:hover {
+            background: #5a6268;
+        }
+        
+        .btn-pdf {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-pdf:hover {
+            background: #c82333;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-whatsapp:hover {
+            background: #128C7E;
+        }
+        
+        .btn-close-modal {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-close-modal:hover {
+            background: #5a6268;
+        }
+
+        .preview-label {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+            font-family: Arial, sans-serif;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 99999;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.show {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        .toast-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .toast-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .toast-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* ============================================= */
+        /* PDF PREVIEW */
+        /* ============================================= */
+        .pdf-preview-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            padding: 20px;
+        }
+        
+        .pdf-preview-container.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pdf-preview-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .pdf-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #D4AF37;
+        }
+        
+        .pdf-preview-header h3 {
+            color: #1a1a1a;
+        }
+        
+        .pdf-preview-body {
+            text-align: center;
+        }
+        
+        .pdf-preview-body iframe {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .pdf-preview-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .pdf-preview-footer button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-download-pdf {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-download-pdf:hover {
+            background: #218838;
+        }
+        
+        .btn-close-pdf {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-close-pdf:hover {
+            background: #c82333;
+        }
+        
+        .btn-whatsapp-pdf {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-whatsapp-pdf:hover {
+            background: #128C7E;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">
-                <span>ASSIM</span>
-                <span>ASSADO</span>
-                <span>ESPETOS</span>
+            <div class="logo-container">
+                <img src="Logo.png" alt="ASSIM ASSADO ESPETOS" class="logo-image" onerror="this.style.display='none'">
             </div>
             <div class="contact-info">
                 <p><i class="fas fa-map-marker-alt"></i> Av. Paulista, 147 - Santa Cruz das Palmeiras/SP</p>
                 <p><i class="fas fa-clock"></i> Quinta a Domingo - 18:00 às 23:00</p>
+                <p><i class="fas fa-phone"></i> (19) 9 8201-0243</p>
             </div>
         </header>
         
         <div class="info-section">
             <h3><i class="fas fa-info-circle"></i> Como fazer seu pedido</h3>
-            <p>1. Escolha seus espetos favoritos</p>
-            <p>2. Clique no botão do WhatsApp</p>
-            <p>3. Envie sua lista de pedidos</p>
+            <p>1. Adicione os itens desejados ao carrinho</p>
+            <p>2. Ajuste as quantidades se necessário</p>
+            <p>3. Escolha Retirada ou Entrega</p>
+            <p>4. Escolha a forma de pagamento</p>
+            <p>5. Finalize o pedido</p>
         </div>
-        
+
+        <div class="delivery-section">
+            <h3><i class="fas fa-truck"></i> Opção de Recebimento</h3>
+            <div class="delivery-options">
+                <label class="delivery-option">
+                    <input type="radio" name="deliveryOption" value="retirada" checked>
+                    <span><i class="fas fa-store"></i> Retirada</span>
+                </label>
+                <label class="delivery-option">
+                    <input type="radio" name="deliveryOption" value="entrega">
+                    <span><i class="fas fa-motorcycle"></i> Entrega (R$ 6,00)</span>
+                </label>
+            </div>
+            <div class="delivery-fee" id="deliveryFee">
+                <i class="fas fa-info-circle"></i> Taxa de entrega: R$ 6,00
+            </div>
+            
+            <!-- Exibir endereço salvo -->
+            <div class="address-info-display" id="addressDisplay">
+                <p><i class="fas fa-map-pin"></i> <strong>Endereço para entrega:</strong></p>
+                <p id="addressText">Rua Exemplo, 123 - Bairro - Cidade/SP</p>
+                <button class="btn-edit-address" onclick="abrirModalEndereco()">
+                    <i class="fas fa-edit"></i> Alterar endereço
+                </button>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h3><i class="fas fa-credit-card"></i> Forma de Pagamento</h3>
+            <div class="payment-options">
+                <label class="payment-option">
+                    <input type="radio" name="paymentOption" value="dinheiro" checked>
+                    <span><i class="fas fa-money-bill-wave"></i> Dinheiro</span>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="paymentOption" value="cartao">
+                    <span><i class="fas fa-credit-card"></i> Cartão</span>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="paymentOption" value="pix">
+                    <span><i class="fas fa-qrcode"></i> PIX</span>
+                </label>
+            </div>
+            <div class="payment-info">
+                <i class="fas fa-info-circle"></i> Pagamento na entrega/retirada
+            </div>
+        </div>
+
+        <div class="instagram-section">
+            <h3><i class="fab fa-instagram"></i> Siga-nos</h3>
+            <a href="https://instagram.com/assi_massadoespetos" class="instagram-btn" target="_blank">
+                <i class="fab fa-instagram"></i> @assi_massadoespetos
+            </a>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- MODAL DE ENDEREÇO -->
+        <!-- ============================================= -->
+        <div class="modal-address-overlay" id="modalEndereco">
+            <div class="modal-address-content">
+                <div class="modal-address-header">
+                    <h3><i class="fas fa-map-marker-alt"></i> Endereço para Entrega</h3>
+                    <button class="modal-address-close" onclick="fecharModalEndereco()">✕</button>
+                </div>
+                <div class="modal-address-body">
+                    <div class="field-group">
+                        <label for="enderecoRua">Rua / Avenida *</label>
+                        <input type="text" id="enderecoRua" placeholder="Ex: Rua das Palmeiras, 123">
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="enderecoBairro">Bairro *</label>
+                            <input type="text" id="enderecoBairro" placeholder="Ex: Centro">
+                        </div>
+                        <div class="field-group">
+                            <label for="enderecoNumero">Número *</label>
+                            <input type="text" id="enderecoNumero" placeholder="Ex: 123">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="enderecoCidade">Cidade *</label>
+                            <input type="text" id="enderecoCidade" placeholder="Ex: Santa Cruz das Palmeiras">
+                        </div>
+                        <div class="field-group">
+                            <label for="enderecoUF">UF *</label>
+                            <input type="text" id="enderecoUF" placeholder="Ex: SP" maxlength="2" style="text-transform:uppercase;">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="enderecoComplemento">Complemento</label>
+                        <input type="text" id="enderecoComplemento" placeholder="Ex: Apto 42, Bloco B">
+                    </div>
+                    <div class="field-group">
+                        <label for="enderecoReferencia">Ponto de Referência</label>
+                        <input type="text" id="enderecoReferencia" placeholder="Ex: Próximo ao Supermercado">
+                    </div>
+                </div>
+                <div class="modal-address-footer">
+                    <button class="btn-address-cancel" onclick="fecharModalEndereco()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-address-confirm" onclick="salvarEndereco()">
+                        <i class="fas fa-check"></i> Salvar Endereço
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- CARRINHO FIXO -->
+        <!-- ============================================= -->
+        <div class="cart-summary">
+            <div class="cart-content">
+                <div>
+                    <span class="cart-total">R$ 0,00</span>
+                    <span class="cart-items-count">0</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn" disabled>
+                    <i class="fas fa-receipt"></i> Finalizar
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- MODAL DO CUPOM -->
+        <!-- ============================================= -->
+        <div class="modal-overlay" id="cupomModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-receipt"></i> Cupom Térmico</h3>
+                    <button class="modal-close" onclick="fecharModal()">✕</button>
+                </div>
+                <div class="modal-body" id="cupomTexto"></div>
+                <div class="preview-label">⬆️ Formato para impressora 58mm</div>
+                <div class="modal-footer">
+                    <button class="btn-copy" onclick="copiarCupom()">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn-pdf" onclick="gerarPDF()">
+                        <i class="fas fa-file-pdf"></i> Gerar PDF
+                    </button>
+                    <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="btn-close-modal" onclick="fecharModal()">
+                        <i class="fas fa-times"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- PDF PREVIEW -->
+        <!-- ============================================= -->
+        <div class="pdf-preview-container" id="pdfPreview">
+            <div class="pdf-preview-content">
+                <div class="pdf-preview-header">
+                    <h3><i class="fas fa-file-pdf"></i> PDF do Pedido</h3>
+                    <button class="modal-close" onclick="fecharPDF()">✕</button>
+                </div>
+                <div class="pdf-preview-body" id="pdfPreviewBody">
+                    <iframe id="pdfFrame" src=""></iframe>
+                </div>
+                <div class="pdf-preview-footer">
+                    <button class="btn-download-pdf" onclick="baixarPDF()">
+                        <i class="fas fa-download"></i> Baixar PDF
+                    </button>
+                    <button class="btn-whatsapp-pdf" onclick="enviarPDFWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> Enviar PDF
+                    </button>
+                    <button class="btn-close-pdf" onclick="fecharPDF()">
+                        <i class="fas fa-times"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOAST -->
+        <div class="toast" id="toast"></div>
+
+        <!-- ============================================= -->
+        <!-- MENU -->
+        <!-- ============================================= -->
+
+        <!-- ESPETOS TRADICIONAIS -->
         <div class="menu-category">
             <h2><i class="fas fa-utensils"></i> ESPETOS TRADICIONAIS</h2>
             <div class="section-divider"></div>
             
-            <div class="menu-item">
-                <div class="item-name">Carne</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Carne" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Carne</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Frango</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Frango" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Frango</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Coração</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Coração" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Coração</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Kafta</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Kafta" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Kafta</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Linguiça</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Linguiça" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Linguiça</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Panceta</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Panceta" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Panceta</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Tulipa</div>
-                <div class="item-price">R$ 6,00</div>
+            <div class="menu-item" data-item="Tulipa" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Tulipa</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
         </div>
-        
+
+        <!-- ESPETOS ESPECIAIS -->
         <div class="menu-category">
             <h2><i class="fas fa-star"></i> ESPETOS ESPECIAIS</h2>
             <div class="section-divider"></div>
             
-            <div class="menu-item">
-                <div class="item-name">Medalhão de Frango</div>
-                <div class="item-price">R$ 7,00</div>
+            <div class="menu-item" data-item="Medalhão de Frango" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Medalhão de Frango</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Medalhão de Mandioca</div>
-                <div class="item-price">R$ 7,00</div>
+            <div class="menu-item" data-item="Medalhão de Mandioca" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Medalhão de Mandioca</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Coração c/ Parmesão</div>
-                <div class="item-price">R$ 7,00</div>
+            <div class="menu-item" data-item="Medalhão de Carne" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Medalhão de Carne</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Romeu e Julieta</div>
-                <div class="item-price">R$ 8,00</div>
+            <div class="menu-item" data-item="Romeu e Julieta" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Romeu e Julieta</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Kafta c/ Queijo</div>
-                <div class="item-price">R$ 8,00</div>
+            <div class="menu-item" data-item="Kafta c/ Queijo" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Kafta c/ Queijo</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Carne com Catupyri e Alho Frito" data-price="10.00">
+                <div class="item-info">
+                    <div class="item-name">Carne c/ Catupyri e Alho Frito</div>
+                    <div class="item-price">R$ 10,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Espeto c/ Maionese Verde e Batata Palha" data-price="10.00">
+                <div class="item-info">
+                    <div class="item-name">Espeto c/ Maionese Verde</div>
+                    <div class="item-desc">Mergulhado na maionese verde e batata palha</div>
+                    <div class="item-price">R$ 10,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
         </div>
-        
+
+        <!-- JANTINHAS -->
         <div class="menu-category">
-            <h2><i class="fas fa-concierge-bell"></i> JANTINHAS</h2>
+            <h2><i class="fas fa-concierge-bell"></i> JANTINHAS COMPLETAS</h2>
             <div class="section-divider"></div>
             
-            <div class="combo-item">
+            <div class="combo-item" data-item="Jantinha 01" data-price="18.00">
                 <div class="combo-title">JANTINHA 01</div>
-                <div class="combo-description">01 Espeto + Arroz, Farofa, Vinagrete, Mandioca, Batata Frita, Creme de Alho</div>
-                <div class="combo-price">R$ 12,00</div>
-            </div>
-            
-            <div class="combo-item">
-                <div class="combo-title">JANTINHA 02</div>
-                <div class="combo-description">02 Espetos + Arroz, Farofa, Vinagrete, Mandioca, Batata Frita, Creme de Alho</div>
+                <div class="combo-detail">01 Espeto à sua escolha</div>
+                <div class="combo-description">Acompanha: Arroz, Farofa, Vinagrete, Mandioca, Batata Frita e Creme de Alho</div>
                 <div class="combo-price">R$ 18,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="combo-item">
+            <div class="combo-item" data-item="Jantinha 02" data-price="24.00">
+                <div class="combo-title">JANTINHA 02</div>
+                <div class="combo-detail">02 Espetos à sua escolha</div>
+                <div class="combo-description">Acompanha: Arroz, Farofa, Vinagrete, Mandioca, Batata Frita e Creme de Alho</div>
+                <div class="combo-price">R$ 24,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="combo-item" data-item="Jantinha 03" data-price="36.00">
                 <div class="combo-title">JANTINHA 03</div>
-                <div class="combo-description">04 Espetos + Arroz, Farofa, Vinagrete, Mandioca, Batata Frita, Creme de Alho</div>
-                <div class="combo-price">R$ 32,00</div>
+                <div class="combo-detail">03 Espetos à sua escolha</div>
+                <div class="combo-description">Acompanha: Arroz, Farofa, Vinagrete, Mandioca, Batata Frita e Creme de Alho</div>
+                <div class="combo-price">R$ 36,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
         </div>
-        
+
+        <!-- LANCHES -->
         <div class="menu-category">
-            <h2><i class="fas fa-drumstick-bite"></i> PORÇÕES E BARCA</h2>
+            <h2><i class="fas fa-hamburger"></i> LANCHES NO PÃO</h2>
             <div class="section-divider"></div>
             
-            <div class="combo-item">
-                <div class="combo-title">BARCA COMPLETA</div>
-                <div class="combo-description">08 Espetos (Carne, Coração, Frango, Tulipa, Kafta, Linguiça, Panceta, Medalhão de Frango) + Acompanhamentos: Batata Frita, Pão de Alho, Farofa, Vinagrete</div>
-                <div class="combo-price">R$ 75,00</div>
+            <div class="combo-item" data-item="Lanche 01" data-price="15.00">
+                <div class="combo-title">LANCHE 01</div>
+                <div class="combo-detail">01 Espeto da sua escolha</div>
+                <div class="combo-description">Acompanha: Pão, Vinagrete, Creme de Alho, Queijo</div>
+                <div class="combo-price">R$ 15,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Batata Frita</div>
-                <div class="item-price">R$ 12,00</div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="item-name">Mandioca Frita</div>
-                <div class="item-price">R$ 12,00</div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="item-name">Polenta Frita</div>
-                <div class="item-price">R$ 10,00</div>
+            <div class="combo-item" data-item="Lanche 02" data-price="22.00">
+                <div class="combo-title">LANCHE 02</div>
+                <div class="combo-detail">02 Espetos da sua escolha</div>
+                <div class="combo-description">Acompanha: Pão, Vinagrete, Creme de Alho, Queijo</div>
+                <div class="combo-price">R$ 22,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
         </div>
-        
+
+        <!-- BARCA & PORÇÕES -->
         <div class="menu-category">
-            <h2><i class="fas fa-hamburger"></i> LANCHES</h2>
+            <h2><i class="fas fa-drumstick-bite"></i> BARCA &amp; PORÇÕES</h2>
             <div class="section-divider"></div>
             
-            <div class="menu-item">
-                <div class="item-name">Carne</div>
-                <div class="item-price">R$ 12,00</div>
+            <div class="combo-item special-item" data-item="Barca 01" data-price="58.00">
+                <div class="combo-title">BARCA 01</div>
+                <div class="combo-detail">04 Espetos tradicionais de sua escolha</div>
+                <div class="combo-description">Acompanha: Batata Frita, Farofa e Vinagrete</div>
+                <div class="combo-price">R$ 58,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Frango</div>
-                <div class="item-price">R$ 12,00</div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="item-name">Kafta</div>
-                <div class="item-price">R$ 12,00</div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="item-name">Linguiça</div>
-                <div class="item-price">R$ 10,00</div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="item-name">Coração</div>
-                <div class="item-price">R$ 12,00</div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="item-name">Medalhão de Frango</div>
-                <div class="item-price">R$ 13,00</div>
+            <div class="combo-item special-item" data-item="Barca 02" data-price="88.00">
+                <div class="combo-title">BARCA 02</div>
+                <div class="combo-detail">08 Espetos tradicionais de sua escolha</div>
+                <div class="combo-description">Acompanha: Batata Frita, Pão de Alho, Farofa e Vinagrete</div>
+                <div class="combo-price">R$ 88,00</div>
+                <div class="combo-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
         </div>
-        
+
+        <!-- PORÇÕES -->
         <div class="menu-category">
-            <h2><i class="fas fa-wine-bottle"></i> BEBIDAS</h2>
+            <h2><i class="fas fa-utensils"></i> PORÇÕES</h2>
             <div class="section-divider"></div>
             
-            <h3 style="padding: 0 20px; margin: 15px 0 10px; color: #ff6b35; font-size: 18px;">Refrigerantes / Sucos / Água</h3>
-            <table class="price-table">
-                <tr>
-                    <td class="item">Coca Cola (LATA)</td>
-                    <td class="price">R$ 6,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Coca Cola zero (LATA)</td>
-                    <td class="price">R$ 7,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Itubaina (LATA)</td>
-                    <td class="price">R$ 5,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Sprite (LATA)</td>
-                    <td class="price">R$ 5,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Coca Cola (2L)</td>
-                    <td class="price">R$ 13,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Coca Cola 1L</td>
-                    <td class="price">R$ 12,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Coca Cola zero (2L)</td>
-                    <td class="price">R$ 14,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Sprite (2L)</td>
-                    <td class="price">R$ 12,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Jabuti (2L)</td>
-                    <td class="price">R$ 8,00</td>
-                </tr>
-                <tr>
-                    <td class="item">H2o</td>
-                    <td class="price">R$ 12,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Ice</td>
-                    <td class="price">R$ 12,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Suco Nativo</td>
-                    <td class="price">R$ 4,00</td>
-                </tr>
-            </table>
+            <div class="menu-item" data-item="Batata Frita" data-price="15.00">
+                <div class="item-info">
+                    <div class="item-name">Batata Frita</div>
+                    <div class="item-price">R$ 15,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
             
-            <h3 style="padding: 0 20px; margin: 20px 0 10px; color: #ff6b35; font-size: 18px;">Cervejas</h3>
-            <table class="price-table">
-                <tr>
-                    <td class="item">Original (300ML)</td>
-                    <td class="price">R$ 7,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Brahma (300ML)</td>
-                    <td class="price">R$ 6,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Antartica (300ML)</td>
-                    <td class="price">R$ 6,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Antartica (LATA)</td>
-                    <td class="price">R$ 7,00</td>
-                </tr>
-                <tr>
-                    <td class="item">Heineken (350ML)</td>
-                    <td class="price">R$ 9,00</td>
-                </tr>
-            </table>
+            <div class="menu-item" data-item="Mandioca Frita" data-price="12.00">
+                <div class="item-info">
+                    <div class="item-name">Mandioca Frita</div>
+                    <div class="item-price">R$ 12,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Polenta Frita" data-price="10.00">
+                <div class="item-info">
+                    <div class="item-name">Polenta Frita</div>
+                    <div class="item-price">R$ 10,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
         </div>
-        
+
+        <!-- ADICIONAIS -->
         <div class="menu-category">
             <h2><i class="fas fa-plus-circle"></i> ADICIONAIS</h2>
             <div class="section-divider"></div>
             
-            <div class="menu-item">
-                <div class="item-name">Vinagrete</div>
-                <div class="item-price">R$ 5,00</div>
+            <div class="menu-item" data-item="Vinagrete" data-price="5.00">
+                <div class="item-info">
+                    <div class="item-name">Vinagrete</div>
+                    <div class="item-price">R$ 5,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Farofa</div>
-                <div class="item-price">R$ 5,00</div>
+            <div class="menu-item" data-item="Farofa" data-price="5.00">
+                <div class="item-info">
+                    <div class="item-name">Farofa</div>
+                    <div class="item-price">R$ 5,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Arroz</div>
-                <div class="item-price">R$ 5,00</div>
+            <div class="menu-item" data-item="Arroz" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Arroz</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
             
-            <div class="menu-item">
-                <div class="item-name">Creme de Alho</div>
-                <div class="item-price">R$ 7,00</div>
+            <div class="menu-item" data-item="Creme de Alho" data-price="5.00">
+                <div class="item-info">
+                    <div class="item-name">Creme de Alho</div>
+                    <div class="item-price">R$ 5,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
             </div>
         </div>
-        
-        <a href="https://wa.me/5519982010243?text=Olá! Gostaria de fazer um pedido do ASSIM ASSADO ESPETOS:" class="whatsapp-btn">
-            <i class="fab fa-whatsapp"></i> Fazer Pedido pelo WhatsApp
-        </a>
-        
+
+        <!-- BEBIDAS -->
+        <div class="menu-category">
+            <h2><i class="fas fa-wine-bottle"></i> BEBIDAS</h2>
+            <div class="section-divider"></div>
+            
+            <div class="sub-category-title">REFRIGERANTES, SUCOS &amp; ÁGUA</div>
+            
+            <div class="menu-item" data-item="Coca-Cola Lata" data-price="6.00">
+                <div class="item-info">
+                    <div class="item-name">Coca-Cola (Lata)</div>
+                    <div class="item-price">R$ 6,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Coca-Cola Zero Lata" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Coca-Cola Zero (Lata)</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Itubaína Lata" data-price="5.00">
+                <div class="item-info">
+                    <div class="item-name">Itubaína (Lata)</div>
+                    <div class="item-price">R$ 5,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Sprite Lata" data-price="5.00">
+                <div class="item-info">
+                    <div class="item-name">Sprite (Lata)</div>
+                    <div class="item-price">R$ 5,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Coca-Cola 1L" data-price="12.00">
+                <div class="item-info">
+                    <div class="item-name">Coca-Cola (1L)</div>
+                    <div class="item-price">R$ 12,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Coca-Cola 2L" data-price="15.00">
+                <div class="item-info">
+                    <div class="item-name">Coca-Cola (2L)</div>
+                    <div class="item-price">R$ 15,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Coca-Cola Zero 2L" data-price="15.00">
+                <div class="item-info">
+                    <div class="item-name">Coca-Cola Zero (2L)</div>
+                    <div class="item-price">R$ 15,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Sprite 2L" data-price="14.00">
+                <div class="item-info">
+                    <div class="item-name">Sprite (2L)</div>
+                    <div class="item-price">R$ 14,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Guaraná Jabuti 2L" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Guaraná Jabuti (2L)</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="H2OH!" data-price="12.00">
+                <div class="item-info">
+                    <div class="item-name">H2OH!</div>
+                    <div class="item-price">R$ 12,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Ice" data-price="12.00">
+                <div class="item-info">
+                    <div class="item-name">Ice</div>
+                    <div class="item-price">R$ 12,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Suco Nativo" data-price="4.00">
+                <div class="item-info">
+                    <div class="item-name">Suco Nativo</div>
+                    <div class="item-price">R$ 4,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Suco Natural Jarra" data-price="8.00">
+                <div class="item-info">
+                    <div class="item-name">Suco Natural (Jarra)</div>
+                    <div class="item-price">R$ 8,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="sub-category-title">CERVEJAS</div>
+            
+            <div class="menu-item" data-item="Original 300ml" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Original (300ml)</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Brahma 300ml" data-price="6.00">
+                <div class="item-info">
+                    <div class="item-name">Brahma (300ml)</div>
+                    <div class="item-price">R$ 6,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Antártica 300ml" data-price="6.00">
+                <div class="item-info">
+                    <div class="item-name">Antártica (300ml)</div>
+                    <div class="item-price">R$ 6,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Antártica Lata" data-price="7.00">
+                <div class="item-info">
+                    <div class="item-name">Antártica (Lata)</div>
+                    <div class="item-price">R$ 7,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            
+            <div class="menu-item" data-item="Heineken Lata" data-price="9.00">
+                <div class="item-info">
+                    <div class="item-name">Heineken (Lata)</div>
+                    <div class="item-price">R$ 9,00</div>
+                </div>
+                <div class="item-controls">
+                    <button class="quantity-btn minus-btn">-</button>
+                    <span class="quantity-display">0</span>
+                    <button class="quantity-btn plus-btn">+</button>
+                    <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+
         <footer>
-            <p>ASSIM ASSADO - ESPETOS</p>
-            <p>Delivery e Retirada no Local</p>
-            <p>Tel: (19) 9 8201-0243</p>
+            <p><strong>ASSIM ASSADO - ESPETOS</strong></p>
+            <p>Obrigado pela preferência!</p>
+            <p>Siga a gente no Instagram</p>
+            <p>@assi_massadoespetos</p>
             <div class="social-icons">
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="https://instagram.com/assi_massadoespetos" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
             </div>
         </footer>
     </div>
 
     <script>
-        // Função para gerar mensagem de pedido
-        document.querySelector('.whatsapp-btn').addEventListener('click', function(e) {
-            const phoneNumber = "5519982010243";
-            const message = "Olá! Gostaria de fazer um pedido do ASSIM ASSADO ESPETOS. Pode me ajudar?";
+        // =============================================
+        // VARIÁVEIS
+        // =============================================
+        let cart = [];
+        const DELIVERY_FEE = 6.00;
+        const LARGURA = 32;
+        let cupomGerado = "";
+        let pdfBlob = null;
+        let pdfDataUrl = "";
+        
+        // Variáveis do endereço
+        let enderecoSalvo = {
+            rua: '',
+            numero: '',
+            bairro: '',
+            cidade: '',
+            uf: '',
+            complemento: '',
+            referencia: ''
+        };
+
+        // =============================================
+        // FUNÇÕES DE ENDEREÇO
+        // =============================================
+        
+        function abrirModalEndereco() {
+            // Preencher campos com dados salvos
+            document.getElementById('enderecoRua').value = enderecoSalvo.rua || '';
+            document.getElementById('enderecoNumero').value = enderecoSalvo.numero || '';
+            document.getElementById('enderecoBairro').value = enderecoSalvo.bairro || '';
+            document.getElementById('enderecoCidade').value = enderecoSalvo.cidade || '';
+            document.getElementById('enderecoUF').value = enderecoSalvo.uf || '';
+            document.getElementById('enderecoComplemento').value = enderecoSalvo.complemento || '';
+            document.getElementById('enderecoReferencia').value = enderecoSalvo.referencia || '';
             
-            // Atualiza o link do WhatsApp
-            this.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            document.getElementById('modalEndereco').classList.add('show');
+        }
+
+        function fecharModalEndereco() {
+            document.getElementById('modalEndereco').classList.remove('show');
+        }
+
+        function salvarEndereco() {
+            const rua = document.getElementById('enderecoRua').value.trim();
+            const numero = document.getElementById('enderecoNumero').value.trim();
+            const bairro = document.getElementById('enderecoBairro').value.trim();
+            const cidade = document.getElementById('enderecoCidade').value.trim();
+            const uf = document.getElementById('enderecoUF').value.trim().toUpperCase();
+            const complemento = document.getElementById('enderecoComplemento').value.trim();
+            const referencia = document.getElementById('enderecoReferencia').value.trim();
+            
+            // Validar campos obrigatórios
+            if (!rua || !numero || !bairro || !cidade || !uf) {
+                mostrarToast('⚠️ Preencha todos os campos obrigatórios (*)', 'warning');
+                return;
+            }
+            
+            enderecoSalvo = { rua, numero, bairro, cidade, uf, complemento, referencia };
+            
+            // Atualizar exibição
+            atualizarExibicaoEndereco();
+            
+            fecharModalEndereco();
+            mostrarToast('✅ Endereço salvo com sucesso!', 'success');
+        }
+
+        function atualizarExibicaoEndereco() {
+            const display = document.getElementById('addressDisplay');
+            const text = document.getElementById('addressText');
+            
+            if (enderecoSalvo.rua && enderecoSalvo.numero) {
+                let enderecoCompleto = `${enderecoSalvo.rua}, ${enderecoSalvo.numero}`;
+                if (enderecoSalvo.bairro) enderecoCompleto += ` - ${enderecoSalvo.bairro}`;
+                if (enderecoSalvo.cidade) enderecoCompleto += `, ${enderecoSalvo.cidade}`;
+                if (enderecoSalvo.uf) enderecoCompleto += `/${enderecoSalvo.uf}`;
+                if (enderecoSalvo.complemento) enderecoCompleto += ` (${enderecoSalvo.complemento})`;
+                
+                text.textContent = enderecoCompleto;
+                display.classList.add('show');
+            } else {
+                display.classList.remove('show');
+            }
+        }
+
+        function getEnderecoCompleto() {
+            if (!enderecoSalvo.rua || !enderecoSalvo.numero) return '';
+            
+            let endereco = `${enderecoSalvo.rua}, ${enderecoSalvo.numero}`;
+            if (enderecoSalvo.bairro) endereco += `, ${enderecoSalvo.bairro}`;
+            if (enderecoSalvo.cidade) endereco += ` - ${enderecoSalvo.cidade}`;
+            if (enderecoSalvo.uf) endereco += `/${enderecoSalvo.uf}`;
+            if (enderecoSalvo.complemento) endereco += ` (${enderecoSalvo.complemento})`;
+            if (enderecoSalvo.referencia) endereco += ` - Ref: ${enderecoSalvo.referencia}`;
+            
+            return endereco;
+        }
+
+        // =============================================
+        // FUNÇÕES DO CARRINHO
+        // =============================================
+        
+        function updateCart() {
+            const cartItemsCount = document.querySelector('.cart-items-count');
+            const cartTotal = document.querySelector('.cart-total');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            let total = 0;
+            let itemCount = 0;
+            
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                itemCount += item.quantity;
+            });
+            
+            const isDelivery = document.querySelector('input[name="deliveryOption"]:checked')?.value === 'entrega';
+            
+            if (isDelivery && itemCount > 0) {
+                total += DELIVERY_FEE;
+                document.getElementById('deliveryFee').classList.add('show');
+            } else {
+                document.getElementById('deliveryFee').classList.remove('show');
+            }
+            
+            cartItemsCount.textContent = itemCount;
+            cartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            checkoutBtn.disabled = itemCount === 0;
+        }
+
+        function addToCart(itemElement) {
+            const itemName = itemElement.getAttribute('data-item');
+            const itemPrice = parseFloat(itemElement.getAttribute('data-price'));
+            const quantityDisplay = itemElement.querySelector('.quantity-display');
+            const quantity = parseInt(quantityDisplay.textContent);
+            
+            if (quantity === 0) return;
+            
+            const existingItem = cart.find(item => item.name === itemName);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ name: itemName, price: itemPrice, quantity: quantity });
+            }
+            
+            quantityDisplay.textContent = '0';
+            updateCart();
+            
+            const addButton = itemElement.querySelector('.add-to-cart');
+            addButton.innerHTML = '<i class="fas fa-check"></i>';
+            addButton.style.background = '#28a745';
+            
+            setTimeout(() => {
+                addButton.innerHTML = '<i class="fas fa-plus"></i>';
+                addButton.style.background = '';
+            }, 1500);
+        }
+
+        function getPaymentMethodName() {
+            const selected = document.querySelector('input[name="paymentOption"]:checked');
+            if (!selected) return "Não informado";
+            const map = { 'dinheiro': 'Dinheiro', 'cartao': 'Cartão', 'pix': 'PIX' };
+            return map[selected.value] || "Não informado";
+        }
+
+        // =============================================
+        // GERAR CUPOM
+        // =============================================
+        
+        function gerarCupom() {
+            if (cart.length === 0) return "";
+            
+            const isDelivery = document.querySelector('input[name="deliveryOption"]:checked')?.value === 'entrega';
+            const deliveryType = isDelivery ? "ENTREGA" : "RETIRADA";
+            const paymentMethod = getPaymentMethodName();
+            const now = new Date();
+            const dataHora = now.toLocaleString('pt-BR');
+            const numCupom = String(Math.floor(Math.random() * 99999)).padStart(6, '0');
+            const L = LARGURA;
+            
+            let subtotal = 0;
+            let itemCount = 0;
+            let linhas = [];
+            
+            linhas.push("=".repeat(L));
+            linhas.push("   ASSIM ASSADO - ESPETOS");
+            linhas.push("   Av. Paulista, 147");
+            linhas.push("   Santa Cruz das Palmeiras");
+            linhas.push("   Tel: (19) 9 8201-0243");
+            linhas.push("=".repeat(L));
+            linhas.push("");
+            linhas.push("     *** PEDIDO ***");
+            linhas.push("-".repeat(L));
+            
+            cart.forEach(item => {
+                const qty = item.quantity + "x";
+                const totalItem = item.price * item.quantity;
+                subtotal += totalItem;
+                itemCount += item.quantity;
+                const preco = "R$ " + totalItem.toFixed(2).replace('.', ',');
+                
+                let nome = item.name;
+                if (nome.length > 18) nome = nome.substring(0, 16) + "..";
+                
+                const espacos = L - qty.length - nome.length - preco.length;
+                const espacosReais = Math.max(0, espacos);
+                linhas.push(qty + " " + nome + " ".repeat(espacosReais) + preco);
+            });
+            
+            linhas.push("-".repeat(L));
+            
+            let total = subtotal;
+            linhas.push("SUBTOTAL" + " ".repeat(L - 9) + "R$ " + subtotal.toFixed(2).replace('.', ','));
+            
+            if (isDelivery) {
+                linhas.push("Taxa entrega" + " ".repeat(L - 12) + "R$ 6,00");
+                total += DELIVERY_FEE;
+            }
+            
+            linhas.push("=".repeat(L));
+            linhas.push("TOTAL" + " ".repeat(L - 6) + "R$ " + total.toFixed(2).replace('.', ','));
+            linhas.push("=".repeat(L));
+            linhas.push("");
+            
+            linhas.push("TIPO: " + deliveryType);
+            linhas.push("PAGAMENTO: " + paymentMethod);
+            
+            if (isDelivery) {
+                const endereco = getEnderecoCompleto();
+                if (endereco) {
+                    linhas.push("ENDEREÇO: " + endereco);
+                } else {
+                    linhas.push("ENDEREÇO: ___________________");
+                }
+            } else {
+                linhas.push("RETIRADA NO LOCAL");
+            }
+            
+            linhas.push("");
+            linhas.push("ITENS: " + itemCount);
+            linhas.push("DATA: " + dataHora);
+            linhas.push("");
+            
+            linhas.push("-".repeat(L));
+            linhas.push("   OBRIGADO PELA PREFERÊNCIA!");
+            linhas.push("   SIGA-NOS NO INSTAGRAM");
+            linhas.push("   @assi_massadoespetos");
+            linhas.push("-".repeat(L));
+            linhas.push("");
+            
+            linhas.push("CUPOM FISCAL");
+            linhas.push("ECF: 001  COO: " + numCupom);
+            linhas.push("DATA: " + dataHora);
+            linhas.push("-".repeat(L));
+            linhas.push("");
+            
+            linhas.push("OBS: ___________________________");
+            linhas.push("     ___________________________");
+            linhas.push("");
+            
+            linhas.push("-".repeat(L));
+            linhas.push(" ".repeat(12) + "CORTE AQUI");
+            linhas.push("-".repeat(L));
+            linhas.push("");
+            
+            return linhas.join("\n");
+        }
+
+        // =============================================
+        // GERAR PDF
+        // =============================================
+        
+        function gerarPDF() {
+            const cupom = cupomGerado || gerarCupom();
+            if (!cupom) return;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            doc.setFont('courier', 'normal');
+            doc.setFontSize(10);
+            
+            const marginX = 20;
+            const marginY = 20;
+            const lineHeight = 4.5;
+            
+            const linhas = cupom.split('\n');
+            let y = marginY;
+            
+            linhas.forEach(linha => {
+                if (y > 280) {
+                    doc.addPage();
+                    y = marginY;
+                }
+                doc.text(linha, marginX, y);
+                y += lineHeight;
+            });
+            
+            pdfBlob = doc.output('blob');
+            pdfDataUrl = doc.output('datauristring');
+            
+            mostrarPreviewPDF();
+            
+            return doc;
+        }
+
+        function mostrarPreviewPDF() {
+            const frame = document.getElementById('pdfFrame');
+            frame.src = pdfDataUrl;
+            document.getElementById('pdfPreview').classList.add('show');
+        }
+
+        function fecharPDF() {
+            document.getElementById('pdfPreview').classList.remove('show');
+            document.getElementById('pdfFrame').src = '';
+        }
+
+        function baixarPDF() {
+            if (!pdfBlob) {
+                gerarPDF();
+                setTimeout(baixarPDF, 500);
+                return;
+            }
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(pdfBlob);
+            link.download = `Pedido_Assim_Assado_${new Date().toISOString().slice(0,10)}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            
+            mostrarToast('📄 PDF baixado com sucesso!', 'success');
+        }
+
+        // =============================================
+        // ENVIAR PDF NO WHATSAPP
+        // =============================================
+        
+        function enviarPDFWhatsApp() {
+            if (!pdfBlob) {
+                gerarPDF();
+                setTimeout(enviarPDFWhatsApp, 500);
+                return;
+            }
+            
+            const url = URL.createObjectURL(pdfBlob);
+            
+            const phoneNumber = "5519982010243";
+            
+            // Montar mensagem com endereço se for entrega
+            const isDelivery = document.querySelector('input[name="deliveryOption"]:checked')?.value === 'entrega';
+            let enderecoMsg = '';
+            if (isDelivery) {
+                const endereco = getEnderecoCompleto();
+                if (endereco) {
+                    enderecoMsg = `\n\n📍 *Endereço:* ${endereco}`;
+                } else {
+                    enderecoMsg = `\n\n📍 *Endereço:* `;
+                }
+            }
+            
+            const mensagem = `*ASSIM ASSADO - PEDIDO*\n\n` +
+                `Olá! Segue em anexo o PDF do meu pedido.\n\n` +
+                `📄 O PDF foi baixado automaticamente. Por favor, anexe-o à esta conversa.` +
+                enderecoMsg +
+                `\n\n*Total: R$ ${calcularTotal().toFixed(2).replace('.', ',')}*`;
+            
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(mensagem)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Pedido_Assim_Assado_${new Date().toISOString().slice(0,10)}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            
+            mostrarToast('✅ PDF baixado! Anexe-o na conversa do WhatsApp.', 'success');
+            
+            cart = [];
+            updateCart();
+            fecharPDF();
+            fecharModal();
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+            });
+            const isDelivery = document.querySelector('input[name="deliveryOption"]:checked')?.value === 'entrega';
+            if (isDelivery && cart.length > 0) {
+                total += DELIVERY_FEE;
+            }
+            return total;
+        }
+
+        // =============================================
+        // TOAST
+        // =============================================
+        
+        function mostrarToast(mensagem, tipo = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensagem;
+            toast.className = 'toast show toast-' + tipo;
+            
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        // =============================================
+        // FUNÇÕES DA INTERFACE
+        // =============================================
+        
+        function abrirModal() {
+            // Verificar se é entrega e se o endereço está preenchido
+            const isDelivery = document.querySelector('input[name="deliveryOption"]:checked')?.value === 'entrega';
+            
+            if (isDelivery && (!enderecoSalvo.rua || !enderecoSalvo.numero)) {
+                mostrarToast('⚠️ Para entrega, preencha o endereço primeiro!', 'warning');
+                abrirModalEndereco();
+                return;
+            }
+            
+            cupomGerado = gerarCupom();
+            if (!cupomGerado) return;
+            
+            document.getElementById('cupomTexto').textContent = cupomGerado;
+            document.getElementById('cupomModal').classList.add('show');
+        }
+
+        function fecharModal() {
+            document.getElementById('cupomModal').classList.remove('show');
+        }
+
+        function copiarCupom() {
+            const texto = document.getElementById('cupomTexto').textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast('📋 Cupom copiado!', 'success');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = texto;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                mostrarToast('📋 Cupom copiado!', 'success');
+            });
+        }
+
+        function enviarWhatsApp() {
+            if (cart.length === 0) return;
+            
+            const phoneNumber = "5519982010243";
+            const mensagem = cupomGerado || gerarCupom();
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
+            
+            cart = [];
+            updateCart();
+            fecharModal();
+        }
+
+        // =============================================
+        // EVENTOS
+        // =============================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Controles de quantidade
+            document.querySelectorAll('.plus-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const display = this.parentElement.querySelector('.quantity-display');
+                    display.textContent = parseInt(display.textContent) + 1;
+                });
+            });
+            
+            document.querySelectorAll('.minus-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const display = this.parentElement.querySelector('.quantity-display');
+                    const current = parseInt(display.textContent);
+                    if (current > 0) display.textContent = current - 1;
+                });
+            });
+            
+            // Adicionar ao carrinho
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const item = this.closest('.menu-item, .combo-item');
+                    addToCart(item);
+                });
+            });
+            
+            // Botão finalizar
+            document.getElementById('checkoutBtn').addEventListener('click', abrirModal);
+            
+            // Radios de entrega
+            document.querySelectorAll('input[name="deliveryOption"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateCart();
+                    // Se selecionou entrega, mostrar opção de endereço
+                    if (this.value === 'entrega') {
+                        if (!enderecoSalvo.rua || !enderecoSalvo.numero) {
+                            setTimeout(() => {
+                                abrirModalEndereco();
+                            }, 300);
+                        }
+                    }
+                });
+            });
+            
+            // Tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    fecharModal();
+                    fecharPDF();
+                    fecharModalEndereco();
+                }
+            });
+            
+            // Fechar modais clicando fora
+            document.getElementById('cupomModal').addEventListener('click', function(e) {
+                if (e.target === this) fecharModal();
+            });
+            
+            document.getElementById('pdfPreview').addEventListener('click', function(e) {
+                if (e.target === this) fecharPDF();
+            });
+            
+            document.getElementById('modalEndereco').addEventListener('click', function(e) {
+                if (e.target === this) fecharModalEndereco();
+            });
+            
+            // Inicializar exibição do endereço
+            atualizarExibicaoEndereco();
         });
     </script>
 </body>
