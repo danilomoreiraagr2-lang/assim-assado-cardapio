@@ -394,7 +394,7 @@
             
             <div class="menu-item">
                 <div class="item-name">Carne</div>
-                <div class="item-price">R$ 6,00</div>
+                <div class="item-price">R$ 7,00</div>
             </div>
             
             <div class="menu-item">
